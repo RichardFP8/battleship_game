@@ -15,7 +15,7 @@ def how_many_ships_to_create():
 
 
 def clear():
-    '''Based on OS, clear the console after the rules been shown'''
+    """Based on OS, clear the console after the rules been shown"""
     if name == 'nt':  # operating system is Windows
         _ = system('cls')  # else it's Linux, MacOS
     else:
@@ -23,15 +23,15 @@ def clear():
 
 
 def validate_integer(axis=''):
-    '''Args:
+    """Args:
         axis: (str) Letter to find what range we're using to validate user input including leaving it empty
-        Range for x is 1-48, Range for y is 1-23, Range for length of ship is 2-7 '''
+        Range for x is 1-48, Range for y is 1-23, Range for length of ship is 2-7 """
     number = 0
-    max = 48 if axis == 'x' else 23 if axis == 'y' else 7
-    min = 1 if axis else 2  # if axis isn't empty than we're validating a coordinate
-    message = f'Starting coordinate for {axis} (1-{max}): ' if axis else 'Length of the ship (2-7): '
+    max_num = 48 if axis == 'x' else 23 if axis == 'y' else 7
+    min_num = 1 if axis else 2  # if axis isn't empty than we're validating a coordinate
+    message = f'Starting coordinate for {axis} (1-{max_num}): ' if axis else 'Length of the ship (2-7): '
 
-    while not min <= number <= max:
+    while not min_num <= number <= max_num:
         try:
             number = int(input(message))
         except ValueError:
@@ -42,10 +42,12 @@ def validate_integer(axis=''):
 
 
 def is_out_of_bounds(is_vertical, x, y, length):
-    '''Args:
+    """Args:
         is_vertical: (boolean) is the ship facing vertical or not
-        x, y: (int) the starting coordinates of the ship (x, y) in a like-cartesian plane
-        length: (int) the length of the ship'''
+        x: (int) the starting x coordinate of the ship | (x, y) in a like-cartesian plane
+        y: (int) the starting y coordinate of the ship
+        length: (int) the length of the ship"""
+
     # check that the ship stays within the 'field' and doesn't go out
     ending_y_coord = y + length
     ending_x_coord = x + length
@@ -81,7 +83,7 @@ def is_out_of_bounds(is_vertical, x, y, length):
 
 
 def create_one_ship():
-    '''Prompt the user for and validate the starting (x, y) coordinate, length of ship and whether it\'s vertical. Basically, creating ONE ship'''
+    """Prompt the user for and validate the starting (x, y) coordinate, length of ship and whether it's vertical"""
     start_x_coord = validate_integer('x')
     start_y_coord = validate_integer('y')
     ship_length = validate_integer()
@@ -93,24 +95,28 @@ def create_one_ship():
     is_vertical = is_vertical_response == 'Y'
 
     # check if the coordinates are not 'out of bounds'
-    # - 1 b/c we're including the starting x/y as part of the ship length, ex: if it's 45 and length is 2, then 45 and 46 not 45, 46, 47
+    # - 1 b/c we're including the starting x/y as part of the ship length
+    # #ex: if it's 45 and length is 2, then 45 and 46 not 45, 46, 47
     ending_coords = is_out_of_bounds(is_vertical, start_x_coord, start_y_coord, ship_length - 1)
     # if is
 
-    return [(start_x_coord, start_y_coord), is_vertical, ship_length]
+    return [(start_x_coord, start_y_coord), ending_coords, is_vertical, ship_length]
 
 
 def explain_rules():
     rules = {
-        'explain_1': 'You\'ll be prompted to type how many ships to create, you can only create as much as 10 and at least 2',
+        'explain_1': 'You\'ll be prompted to type how many ships to create, \
+                you can only create as much as 10 and at least 2',
         'explain_2': 'For each ship, you will define it\'s starting coordinates, meaning (x, y)',
         'explain_3': 'You have to also define how long the ship is, that is, it\'s length',
         'explain_4': 'Also whether the ship faces vertical or not',
         'rule_1': 'Length of ships can only be integers between 2-7 including 2 and 7',
         'rule_2': 'Starting X coordinates can only be integers between 1-48 including 1 and 48',
         'rule_3': 'Starting Y coordinates can only be integers between 1-23 including 1 and 23\n',
-        'example': 'Example: If the starting coordinates are (7, 1), length is 4, and is vertical, then the ending is (7, 4) b/c we\'re including y=1\n',
-        'confirm_1': 'You\'ll be given a chance to look at the positions of your ships after they have been validated\nThis will be helpful to make sure that none of your ships overlap with one another so keep that in mind'
+        'example': 'Example: If the starting coordinates are (7, 1), length is 4, and is vertical, \
+                then the ending is (7, 4) b/c we\'re including y=1\n',
+        'confirm_1': 'You\'ll be given a chance to look at the positions of your ships after they have been validated\n\
+                This will be helpful to make sure that none of your ships overlap with one another so keep that in mind'
     }
     count = 0
     for rule in rules.values():

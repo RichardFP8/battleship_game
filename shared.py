@@ -74,12 +74,12 @@ def ships_on_this_line(row_height, ships_left, dropped_verticals):
 
 
 def print_ships_on_line(row_height, ships_left, dropped_verticals, current_index):
-    '''Args:
-        row_height:(int) the current iteration of the main loop, also represents the y coordinate
-        ships_left:(dict) the ships that haven\'t been done printing
-        dropped_verticals:(dict) the ships facing vertically that aren\'t done printing
-        current_index:(int) tracking what ships have finished printing to update ships_left
-      Print all the ships that fall on this line (row_height; based on their y-coordinates)'''
+    """Args:
+        row_height: (int) the current iteration of the main loop, also represents the y coordinate
+        ships_left: (dict) the ships that haven't been done printing
+        dropped_verticals: (dict) the ships facing vertically that aren't done printing
+        current_index: (int) tracking what ships have finished printing to update ships_left
+      Print all the ships that fall on this line (row_height; based on their y-coordinates)"""
 
     # this variable, line, is what will be printed and returned
     line = '|'
