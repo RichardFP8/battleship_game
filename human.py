@@ -1,5 +1,5 @@
 from os import system, name  # clear the console
-from shared_v2 import is_there_overlap, battlefield
+from shared import *  # need to validate new ships and print them
 from time import sleep  # let user see what's printed for a while before clearing
 
 
@@ -62,32 +62,8 @@ def is_out_of_bounds(is_vertical, x, y, length):
         print('X goes out of bounds, max X is 48')
         return []
 
-    # while out_of_bounds_vertical:
-    #     print('Y goes out of bounds, max Y is 23')
-    #     change = ''
-    #     while change not in ['L', 'Y']:
-    #         change = input('Change Y (Y) or change the the length (L) [Y/L]:').upper()
-    #     if change == 'Y':
-    #         y = validate_integer('y')
-    #     else:
-    #         length = validate_integer()
-
-    #     out_of_bounds_vertical = is_vertical and ending_y_coord > 24  # check again
-
-    # while out_of_bounds_horizontal:
-    #     print('X goes out of bounds, max X is 48')
-    #     change = ''
-    #     while change not in ['X', 'L']:
-    #         change = input('Change X (X) or change the the length (L) [X/L]:').upper()
-    #     if change == 'X':
-    #         x = validate_integer('x')
-    #     else:
-    #         length = validate_integer()
-
-    #     out_of_bounds_horizontal = not is_vertical and ending_x_coord > 49  # check again
-
     ending_coords = (ending_x_coord, ending_y_coord)
-    return ending_coords  # it it doesn't go over
+    return ending_coords  # if it doesn't go over bounds
 
 
 def create_one_ship():
@@ -144,7 +120,8 @@ def explain_rules():
     clear()
 
 
-def main():
+def human_main():
+    """Give instructions to the user playing and print their battleships"""
     # explain_rules()
     total_ships = how_many_ships_to_create()
     clear()
@@ -170,10 +147,11 @@ def main():
 
         battlefield(user_ships, total_ships)
         print(f'Successfully created {key}: {ship_data}')
-        ready_for_next = False
-        while not ready_for_next:
-            ready_for_next = input('Press Y when ready to create next ship: ').upper() == 'Y'
+        if ship_count < total_ships:
+            ready_for_next = False
+            while not ready_for_next and ship_count != total_ships:
+                ready_for_next = input('Press Y when ready to create next ship: ').upper() == 'Y'
         clear()
         ship_count += 1
 
-    return user_ships
+    return total_ships

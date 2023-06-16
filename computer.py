@@ -1,5 +1,5 @@
 from random import randint
-from shared import is_there_overlap  # the only function I need
+from shared import *
 
 
 def create_one_ship():
@@ -70,3 +70,8 @@ def create_all_ships(ships_needed):
     # sort by starting y(and then starting x) coordinates to loop through them more easily when printing lines
     sorted_ships = dict(sorted(com_ships.items(), key=lambda x: (x[1][0][1], x[1][0][0])))
     return sorted_ships
+
+
+def computer_main(num_ships):
+    all_ships = create_all_ships(num_ships)
+    battlefield(all_ships, num_ships)
