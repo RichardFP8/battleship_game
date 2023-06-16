@@ -62,15 +62,21 @@ def is_there_overlap(new_ship, ships_ready):
 
 
 def ships_on_this_line(row_height, ships_left, dropped_verticals):
+    """Args:
+        row_height: (int) the current iteration of the main loop(25 in total) match w/ y coordinates
+        ships_left: (dict) the ships that haven't been done printing
+        dropped_verticals: (dict) vertical ships already printing and not done
+      Get the ship(s) that fall on this line (row_height)"""
     # get the ships in this line
     ships_here = {}
     for ship, info in ships_left.items():
-        if info[0][1] == row_height or ship in dropped_verticals:
+        if info[0][1] == row_height or ship in dropped_verticals:  # [0][1] is starting y coordinate
             ships_here[ship] = info
 
-    sort_ships = dict(sorted(ships_here.items(), key=lambda x: x[0][0][0]))
+    if (len(ships_here) > 1):
+        ships_here = dict(sorted(ships_here.items(), key=lambda x: x[1][0][0]))
 
-    return sort_ships
+    return ships_here
 
 
 def print_ships_on_line(row_height, ships_left, dropped_verticals, current_index):
@@ -93,7 +99,7 @@ def print_ships_on_line(row_height, ships_left, dropped_verticals, current_index
         ship_length = current_info[4]  # horizontal ships are printed completely in one line
         line_length = len(line)  # used for rjust; print the lines at the correct indexes by correct width
         # if it's horizontal
-        if row_height == end_y_coord and not is_vertical:
+        if not is_vertical:
             draw_ship = direction * ship_length  # entire ship will be printed on this line
             # number of whitespaces between the last non-whitespace character to the next one
             width = abs(line_length - end_x_coord) + 1  # +1 means including '|' in the width
@@ -107,19 +113,20 @@ def print_ships_on_line(row_height, ships_left, dropped_verticals, current_index
                 del dropped_verticals[ship]  # don't include it in this dict, so we don't print it anymore
                 current_index += 1
 
-                # if is vertical, not already in dropped_verticals dictionary and starts at this line
-        elif is_vertical and ship not in dropped_verticals_keys and row_height == start_y_coord:
+        # if is vertical, not already in dropped_verticals dictionary
+        elif ship not in dropped_verticals_keys:
             line += direction.rjust(abs(line_length - start_x_coord) + 1)
             dropped_verticals[ship] = ship  # add the KEY to this dict; key-value pairs are both the same value
         else:  # list is sorted by smallest y's, no need to search through ships w/ other y's than row_height
             break
 
     # complete the line, print it, and go to the next iteration
-    # line += '|'.rjust(50 - len(line))  # find any remaining whitepsace to complete a line of 50 characters
-    # print(line)
-    # if len(line) > 50:
-    #   print('F  A  I  L  E  D\n'.center(50))
-    #   return False
+    line += '|'.rjust(50 - len(line))  # find any remaining whitepsace to complete a line of 50 characters
+    if len(line) > 50:
+        print('F  A  I  L  E  D\n'.center(50))
+        # print('Length:', len(line))
+        return False
+    print(line)
 
     return True
 
@@ -144,17 +151,13 @@ def battlefield(all_ships, total_ships):
             ships_left = dict(islice(all_ships.items(), current_index, total_ships))
             # inner for-loop, multiple if-conditions: print the corresponding ships on this row_height(y)
             ships_here = ships_on_this_line(row_height, ships_left, dropped_verticals)
-            print(row_height)
-            for ship, info in ships_here.items():
-                print(ship, info)
-            print()
-            print_ships_on_line(row_height, ships_here, dropped_verticals, current_index)
+            check = print_ships_on_line(row_height, ships_here, dropped_verticals, current_index)
             # check if the line completes at least in the right length, otherwise stop printing
-            # if not check: return False
+            if not check: return False
             continue  # move on to the next iteration of the outer loop
 
         # # else no ship drops, and it's not the top/bottom, just add '|'
-        # else:
-        #     print('|'.ljust(25) + '|'.rjust(25))
+        else:
+            print('|'.ljust(25) + '|'.rjust(25))
 
     return 0

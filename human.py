@@ -1,5 +1,5 @@
 from os import system, name  # clear the console
-from shared import is_there_overlap, battlefield
+from shared_v2 import is_there_overlap, battlefield
 from time import sleep  # let user see what's printed for a while before clearing
 
 
@@ -52,34 +52,42 @@ def is_out_of_bounds(is_vertical, x, y, length):
     ending_y_coord = y + length
     ending_x_coord = x + length
     out_of_bounds_vertical = is_vertical and ending_y_coord > 24
-    out_of_bounds_horizontal = not is_vertical and ending_x_coord
+    out_of_bounds_horizontal = not is_vertical and ending_x_coord > 48
 
-    while out_of_bounds_vertical:
+    if out_of_bounds_vertical:
         print('Y goes out of bounds, max Y is 23')
-        change = ''
-        while change not in ['L', 'Y']:
-            change = input('Change Y (Y) or change the the length (L) [Y/L]:').upper()
-        if change == 'Y':
-            y = validate_integer('y')
-        else:
-            length = validate_integer()
+        return []
 
-        out_of_bounds_vertical = is_vertical and ending_y_coord > 24  # check again
-
-    while out_of_bounds_horizontal:
+    elif out_of_bounds_horizontal:
         print('X goes out of bounds, max X is 48')
-        change = ''
-        while change not in ['X', 'L']:
-            change = input('Change X (X) or change the the length (L) [X/L]:').upper()
-        if change == 'X':
-            x = validate_integer('x')
-        else:
-            length = validate_integer()
+        return []
 
-        out_of_bounds_horizontal = not is_vertical and ending_x_coord > 49  # check again
+    # while out_of_bounds_vertical:
+    #     print('Y goes out of bounds, max Y is 23')
+    #     change = ''
+    #     while change not in ['L', 'Y']:
+    #         change = input('Change Y (Y) or change the the length (L) [Y/L]:').upper()
+    #     if change == 'Y':
+    #         y = validate_integer('y')
+    #     else:
+    #         length = validate_integer()
+
+    #     out_of_bounds_vertical = is_vertical and ending_y_coord > 24  # check again
+
+    # while out_of_bounds_horizontal:
+    #     print('X goes out of bounds, max X is 48')
+    #     change = ''
+    #     while change not in ['X', 'L']:
+    #         change = input('Change X (X) or change the the length (L) [X/L]:').upper()
+    #     if change == 'X':
+    #         x = validate_integer('x')
+    #     else:
+    #         length = validate_integer()
+
+    #     out_of_bounds_horizontal = not is_vertical and ending_x_coord > 49  # check again
 
     ending_coords = (ending_x_coord, ending_y_coord)
-    return ending_coords
+    return ending_coords  # it it doesn't go over
 
 
 def create_one_ship():
@@ -98,9 +106,11 @@ def create_one_ship():
     # - 1 b/c we're including the starting x/y as part of the ship length
     # #ex: if it's 45 and length is 2, then 45 and 46 not 45, 46, 47
     ending_coords = is_out_of_bounds(is_vertical, start_x_coord, start_y_coord, ship_length - 1)
-    # if is
+    # it means that user gave me invalid input
+    if len(ending_coords) == 0:
+        return []
 
-    return [(start_x_coord, start_y_coord), ending_coords, is_vertical, ship_length]
+    return [(start_x_coord, start_y_coord), ending_coords, is_vertical, "o", ship_length]
 
 
 def explain_rules():
@@ -128,32 +138,42 @@ def explain_rules():
 
         print(rule)
         count += 1
-        sleep(1)
+        sleep(7)
 
-    sleep(2)
+    sleep(5)
     clear()
 
 
-# explain_rules()
-total_ships = how_many_ships_to_create()
-clear()
-user_ships = {}  # store user's ships
-ship_count = 1  # keep track of how many ships are created
+def main():
+    # explain_rules()
+    total_ships = how_many_ships_to_create()
+    clear()
+    user_ships = {}  # store user's ships
+    ship_count = 1  # keep track of how many ships are created
 
-for ship in range(1, total_ships + 1):
-    key = f'ship{ship_count}'  # key for the key-value pair of this ship
-    print('Creating', key, '\n')  # let user know what ship we're making
-    ship_data = create_one_ship()
-
-    if len(user_ships) == 0:  # this must be the first ship so just add it
-        user_ships[key] = ship_data
-    else:
-        # validate that the new ship doesn't overlap with the other ship(s)
-        while not is_there_overlap(ship_data, user_ships):
-            # if it isn't valid, create a new ship and validate that one
+    for ship in range(1, total_ships + 1):
+        key = f'ship{ship_count}'  # key for the key-value pair of this ship
+        print('Creating', key, '\n')  # let user know what ship we're making
+        ship_data = []
+        # it would return 0 if user input is invalid
+        while len(ship_data) == 0:
             ship_data = create_one_ship()
-        user_ships[key] = ship_data
 
-    print(f'Successfully created {key}: {ship_data}')
-    battlefield(user_ships, total_ships)
-    ship_count += 1
+        if len(user_ships) == 0:  # this must be the first ship so just add it
+            user_ships[key] = ship_data
+        else:
+            # validate that the new ship doesn't overlap with the other ship(s)
+            while not is_there_overlap(ship_data, user_ships):
+                # if it isn't valid, create a new ship and validate that one
+                ship_data = create_one_ship()
+            user_ships[key] = ship_data
+
+        battlefield(user_ships, total_ships)
+        print(f'Successfully created {key}: {ship_data}')
+        ready_for_next = False
+        while not ready_for_next:
+            ready_for_next = input('Press Y when ready to create next ship: ').upper() == 'Y'
+        clear()
+        ship_count += 1
+
+    return user_ships
